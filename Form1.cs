@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using JSONBeautify.Form;
 using Newtonsoft.Json;
+using System.Threading;
 
 namespace WindowsFormsApp1
 {
@@ -32,10 +33,11 @@ namespace WindowsFormsApp1
                     dynamic parsedJson = JsonConvert.DeserializeObject(text);
                     var beauty = JsonConvert.SerializeObject(parsedJson, Formatting.Indented);
                     Clipboard.SetText(beauty);
+                    ShowNotofication(true);
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show("Could not format JSON");
+                    ShowNotofication(false);
                 }
             }
         }
@@ -44,6 +46,23 @@ namespace WindowsFormsApp1
         {
             // Quick and dirty to keep the main window invisible      
             base.SetVisibleCore(false);
+        }
+
+        private void ShowNotofication(bool sucess)
+        {
+
+            var notification = new NotifyIcon()
+            {
+                Visible = true,
+                Icon = SystemIcons.Information,
+                BalloonTipTitle = "Json Beautifier",
+                BalloonTipText = sucess ? "JSON formatted" : "Could not format JSON"
+            };
+
+            notification.ShowBalloonTip(2);
+            notification.Dispose();
+
+            Hide();
         }
     }
 }
